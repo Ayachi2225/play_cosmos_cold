@@ -25,6 +25,7 @@ if (Test-Path -LiteralPath $dist) {
 New-Item -ItemType Directory -Force -Path $dist | Out-Null
 Copy-Item -LiteralPath (Join-Path $projectRoot 'bin\Release\CosmosColdMusic.dll') -Destination $dist
 Copy-Item -LiteralPath (Join-Path $projectRoot 'CosmosColdMusic.json') -Destination $dist
+Copy-Item -LiteralPath (Join-Path $projectRoot 'README.md') -Destination $dist
 
 $distAudio = Join-Path $dist 'audio'
 New-Item -ItemType Directory -Force -Path $distAudio | Out-Null

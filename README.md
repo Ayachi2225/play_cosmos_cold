@@ -1,9 +1,11 @@
 # 打出宇宙冷漠自动播放宇宙冷漠
 
-有三首歌，四种模式。原版，仅副歌，群星版（62 人合唱），可以自由选择哪个版本的歌播放，也可以选择轮换模式
+有三首歌，四种模式。原版，仅副歌，群星版（62 人合唱），可以可以在主页面的模组配置选择哪个版本的歌播放，也可以选择轮换模式（三首轮着来）
+
+支持联机模式，要求联机的人都下载本 mod，无论任何人打出都会播放，但仅读取本地的歌曲偏好配置，不下载 mod 的人听不到（
 [演示](bilibili.com)
 
-[宇宙冷漠，幻琉 HL](https://www.bilibili.com/video/BV19X9eBpEfS)
+[宇宙冷漠 幻琉 HL](https://www.bilibili.com/video/BV19X9eBpEfS)
 
 [62 人合唱宇宙冷漠](https://www.bilibili.com/video/BV1m9GE6wEPt)
 
@@ -32,8 +34,6 @@ Slay the Spire 2\
 │           ├── refrain.mp3
 │           └── stars.mp3
 ```
-
-完整路径示例：`G:\SteamLibrary\steamapps\common\Slay the Spire 2\mods\CosmosColdMusic\CosmosColdMusic.json`
 
 也可以从源码构建：运行 `build.ps1` 生成压缩包，解压后按上面的结构复制到 `mods` 目录即可。
 
