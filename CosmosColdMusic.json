@@ -1,0 +1,17 @@
+{
+  "id": "CosmosColdMusic",
+  "name": "\u6253\u51fa\u5b87\u5b99\u51b7\u6f20\u81ea\u52a8\u64ad\u653e\u5b87\u5b99\u51b7\u6f20",
+  "author": "Codex",
+  "description": "Plays a locally selected packaged version of Cosmic Indifference when any player plays the card. Includes Original, Refrain, Stars, and Rotation modes.",
+  "version": "2.1.1",
+  "min_game_version": "0.111.0",
+  "has_pck": false,
+  "has_dll": true,
+  "dependencies": [
+    {
+      "id": "BaseLib",
+      "min_version": "3.4.5"
+    }
+  ],
+  "affects_gameplay": false
+}

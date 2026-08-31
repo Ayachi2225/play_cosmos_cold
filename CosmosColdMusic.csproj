@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>CosmosColdMusic</AssemblyName>
+    <Version>2.1.1</Version>
+    <RootNamespace>CosmosColdMusic</RootNamespace>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Sts2Path)' == ''">
+    <Sts2Path>G:\SteamLibrary\steamapps\common\Slay the Spire 2</Sts2Path>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(BaseLibPath)' == ''">
+    <BaseLibPath>G:\SteamLibrary\steamapps\workshop\content\2868840\3737335127\BaseLib</BaseLibPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Sts2DataDir>$(Sts2Path)\data_sts2_windows_x86_64</Sts2DataDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="tests\**" />
+    <Reference Include="0Harmony">
+      <HintPath>$(Sts2DataDir)\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="GodotSharp">
+      <HintPath>$(Sts2DataDir)\GodotSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="BaseLib">
+      <HintPath>$(BaseLibPath)\BaseLib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="sts2">
+      <HintPath>$(Sts2DataDir)\sts2.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="CheckGameFiles" BeforeTargets="ResolveReferences">
+    <Error Text="Slay the Spire 2 was not found at $(Sts2Path). Pass /p:Sts2Path=... to override it."
+           Condition="!Exists('$(Sts2DataDir)\sts2.dll')" />
+    <Error Text="BaseLib was not found at $(BaseLibPath). Install BaseLib or pass /p:BaseLibPath=... to override it."
+           Condition="!Exists('$(BaseLibPath)\BaseLib.dll')" />
+  </Target>
+</Project>
