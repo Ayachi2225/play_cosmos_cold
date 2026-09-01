@@ -37,7 +37,7 @@ foreach ($fileName in @('original.mp3', 'refrain.mp3', 'stars.mp3')) {
     Copy-Item -LiteralPath $sourceFile -Destination (Join-Path $distAudio $fileName)
 }
 
-$zip = Join-Path $projectRoot 'dist\CosmosColdMusic-v2.1.1.zip'
+$zip = Join-Path $projectRoot 'dist\CosmosColdMusic-v2.1.3.zip'
 if (Test-Path -LiteralPath $zip) {
     Remove-Item -LiteralPath $zip -Force
 }

@@ -10,6 +10,15 @@ internal static class RunMusicUpdatePatch
     private static void Prefix() => MusicReplacement.Stop();
 }
 
+// Every room entry updates the run's Progress track, even when the act's
+// background event itself does not change. Stop our MP3 before that transition
+// so rest sites, shops, events, and combats regain their vanilla music.
+[HarmonyPatch(typeof(NRunMusicController), nameof(NRunMusicController.UpdateTrack), new Type[] { })]
+internal static class RunMusicTrackPatch
+{
+    private static void Prefix() => MusicReplacement.Stop("room music transition");
+}
+
 // Special-event music also supersedes our replacement track.
 [HarmonyPatch(typeof(NRunMusicController), nameof(NRunMusicController.PlayCustomMusic))]
 internal static class RunCustomMusicPatch
@@ -44,6 +53,5 @@ internal static class MasterVolumePatch
 [HarmonyPatch(typeof(NAudioManager), nameof(NAudioManager.SetBgmVol))]
 internal static class BgmVolumePatch
 {
-    private static void Postfix(float volume) => MusicReplacement.SetBgmVolume(volume);
+    private static void Prefix(ref float volume) => MusicReplacement.FilterGameBgmVolume(ref volume);
 }
-

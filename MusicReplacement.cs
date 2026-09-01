@@ -12,6 +12,8 @@ internal static class MusicReplacement
     private static AudioStreamPlayer? _player;
     private static float _masterVolume = 0.5f;
     private static float _bgmVolume = 0.5f;
+    private static bool _settingGameBgmInternally;
+    private static bool _vanillaBgmMuted;
 
     internal static void Initialize()
     {
@@ -51,10 +53,6 @@ internal static class MusicReplacement
             // Playing the card again restarts the track from the beginning.
             Stop();
 
-            // Stop both run-specific and global FMOD music before starting the MP3.
-            NRunMusicController.Instance?.StopMusic();
-            NAudioManager.Instance?.StopMusic();
-
             // Mod initializers run early; reread settings now that the game is fully loaded.
             RefreshSavedVolumes();
 
@@ -71,6 +69,7 @@ internal static class MusicReplacement
             RefreshVolume();
             tree.Root.AddChild(_player);
             _player.Play();
+            MuteVanillaBgm();
 
             GD.Print($"[{MainFile.ModId}] Cosmic Indifference played by player {sourcePlayerNetId}; playing {track.DisplayName} ({SongSelection.Mode}).");
         }
@@ -81,24 +80,30 @@ internal static class MusicReplacement
         }
     }
 
-    internal static void Stop()
+    internal static void Stop(string? reason = null)
     {
         AudioStreamPlayer? player = _player;
         _player = null;
+        bool wasPlaying = player is not null;
 
-        if (player is null)
+        if (player is not null)
         {
-            return;
+            try
+            {
+                player.Stop();
+                player.QueueFree();
+            }
+            catch (ObjectDisposedException)
+            {
+                // The scene tree may already have disposed the player during shutdown.
+            }
         }
 
-        try
+        RestoreVanillaBgm();
+
+        if (wasPlaying && !string.IsNullOrEmpty(reason))
         {
-            player.Stop();
-            player.QueueFree();
-        }
-        catch (ObjectDisposedException)
-        {
-            // The scene tree may already have disposed the player during shutdown.
+            GD.Print($"[{MainFile.ModId}] Stopped replacement music ({reason}); restored vanilla BGM.");
         }
     }
 
@@ -108,10 +113,21 @@ internal static class MusicReplacement
         RefreshVolume();
     }
 
-    internal static void SetBgmVolume(float volume)
+    internal static void FilterGameBgmVolume(ref float volume)
     {
+        if (_settingGameBgmInternally)
+        {
+            return;
+        }
+
         _bgmVolume = Mathf.Clamp(volume, 0f, 1f);
         RefreshVolume();
+
+        if (_player is not null)
+        {
+            volume = 0f;
+            _vanillaBgmMuted = true;
+        }
     }
 
     private static void RefreshVolume()
@@ -139,6 +155,64 @@ internal static class MusicReplacement
         catch (Exception exception)
         {
             GD.PrintErr($"[{MainFile.ModId}] Could not read volume settings; using cached values: {exception.Message}");
+        }
+    }
+
+    private static void MuteVanillaBgm()
+    {
+        if (_vanillaBgmMuted)
+        {
+            return;
+        }
+
+        NAudioManager? audioManager = NAudioManager.Instance;
+        if (audioManager is null)
+        {
+            return;
+        }
+
+        try
+        {
+            _settingGameBgmInternally = true;
+            audioManager.SetBgmVol(0f);
+            _vanillaBgmMuted = true;
+        }
+        catch (Exception exception)
+        {
+            GD.PrintErr($"[{MainFile.ModId}] Could not mute vanilla BGM: {exception.Message}");
+        }
+        finally
+        {
+            _settingGameBgmInternally = false;
+        }
+    }
+
+    private static void RestoreVanillaBgm()
+    {
+        if (!_vanillaBgmMuted)
+        {
+            return;
+        }
+
+        _vanillaBgmMuted = false;
+        NAudioManager? audioManager = NAudioManager.Instance;
+        if (audioManager is null)
+        {
+            return;
+        }
+
+        try
+        {
+            _settingGameBgmInternally = true;
+            audioManager.SetBgmVol(_bgmVolume);
+        }
+        catch (Exception exception)
+        {
+            GD.PrintErr($"[{MainFile.ModId}] Could not restore vanilla BGM volume: {exception.Message}");
+        }
+        finally
+        {
+            _settingGameBgmInternally = false;
         }
     }
 

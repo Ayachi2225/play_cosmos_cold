@@ -13,7 +13,6 @@ public enum 歌曲版本
 internal sealed class CosmosColdConfig : SimpleModConfig
 {
     public static 歌曲版本 歌曲选项 { get; set; } = 歌曲版本.原版;
-
 }
 
 internal static class BaseLibSettings
